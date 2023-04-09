@@ -48,7 +48,7 @@ def main():
     def game_instructions():
         print('--------------Instructions---------------')
         print('Directions are North/South/East/West')
-        print('Type look to see if you can find anything in the room')
+        print('In order to pick up the item answer the prompt')
         print('In order to win the game you have to successfully find the 6 items in the rooms and pick them up')
         print('Without running into the evil boss Good luck!\n')
 
@@ -62,11 +62,6 @@ def main():
         if user_move in rooms[current_room]:
             current_room = exits[user_move]
             exits = rooms[current_room]
-            print('current room is', current_room, '\n')
-        elif user_move == 'look':
-            get_item()
-        elif user_move == 'check':
-            player_status()
         else:
             print('cannot go that way! Choose a different direction! \n')
 
@@ -74,13 +69,11 @@ def main():
     # function to look and pick up items
     #
     def get_item():
-        # user_look = input('Do you want to look around the room? ')
         global item
-        # if user_look == 'yes':
-        item = rooms[current_room].get('item')
-        print('You found', item)
-        user_look = input('Do you want to pick up the item? ')
-        if item is not None and user_look == 'yes':
+        if item in user_inventory or item is None:
+            pass
+        global pickup
+        if item is not None and pickup == 'yes':
             if item in user_inventory:
                 print('You already have this item in your inventory!')
             else:
@@ -91,16 +84,27 @@ def main():
     # function for user to see inventory
     #
     def player_status():
+        print('current room is', current_room, '\n')
+        print('Possible directions are',list(exits.keys()))
+        global pickup
+        global item
         global user_inventory
+        item = rooms[current_room].get('item')
         print('You are carrying', user_inventory, '\n')
+        if item not in user_inventory and not None:
+            print('You found a', item)
+            pickup = input('Do you want to pick up the item? ')
 
     #
     # loop for the user to play until keyword quit
     #
     game_instructions()
+    print(current_room)
     while user_move != 'quit':
-        user_move = input('Enter a Direction North/South/East/West or look : ').lower()
+        user_move = input('Enter a Direction North/South/East/West: ').lower()
         move_to_locations()
+        player_status()
+        get_item()
         if len(user_inventory) == 6:
             print('You have won the Game congrats on slaying the evil beast!')
             break
